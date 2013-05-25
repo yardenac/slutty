@@ -2,10 +2,21 @@
 
 import mailbox, getpass, os, signal, sys
 
+def isbox(path):
+    if not os.path.isfile(path): return False
+    if os.path.islink(path): return False
+    try:
+        handle = open(path)
+        beginning = str(handle.read(5))
+    except:
+        handle.close()
+        return False
+    if beginning == 'From ': return True
+
 # get args
 paths = []
 for arg in sys.argv[1:]:
-    if os.path.isfile(arg) and not os.path.islink(arg):
+    if isbox(arg):
         paths.append(arg)
     else:
         print("weird arg: " + arg)
@@ -18,6 +29,7 @@ if not paths:
 # set up mailbox data structures
 boxen = []
 for path in paths:
+    if not isbox(path): continue
     try:
         box = mailbox.mbox(path)
         box.path = path
