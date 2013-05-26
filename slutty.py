@@ -8,10 +8,12 @@ def isbox(path):
     try:
         handle = open(path)
         beginning = str(handle.read(5))
+        handle.close()
     except:
         handle.close()
         return False
     if beginning == 'From ': return True
+    return False
 
 # get args
 paths = []
@@ -24,12 +26,13 @@ for arg in sys.argv[1:]:
 # use mail spool if no other mboxes asked for
 if not paths:
     paths = ['/var/spool/mail/' + getpass.getuser()]
-    print("No paths passed - looking for your default mail spool")
 
 # set up mailbox data structures
 boxen = []
 for path in paths:
-    if not isbox(path): continue
+    if not isbox(path):
+        print("Not a mailbox: " + path)
+        continue
     try:
         box = mailbox.mbox(path)
         box.path = path
