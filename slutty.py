@@ -57,5 +57,14 @@ signal.signal(signal.SIGTSTP, cleanup)
 # process mailboxes
 for box in boxen:
     print("processing mailbox: " + box.path)
+    box.lock()
+    for message in box:
+        if (message['subject']):
+            print(message['subject'])
+        else:
+            print("[empty subject]")
+        for header in message:
+            print("   " + header + ": " + message[header])
+    box.unlock()
 
 cleanup
